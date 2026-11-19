@@ -1,0 +1,86 @@
+# FinGuard AI
+
+FinGuard AI is a Streamlit project scaffold for loan operations, credit assessment, debt analysis, loan monitoring, and banking analytics.
+
+## Run locally
+
+```bash
+python -m venv .venv
+# Activate the environment, then:
+pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+## Project layout
+
+- `modules/` contains the Streamlit feature pages, including the Dashboard.
+- `data/dashboard_demo.py` provides illustrative Dashboard sample data.
+- `modules/loan_application.py` implements the Loan Applications prototype.
+- `data/loan_applications_demo.py` provides illustrative application records.
+- `ml/` contains preprocessing, scoring, prediction, and evaluation code.
+- `data/` separates source, processed, and sample datasets.
+- `models/` stores trained model artifacts and evaluation outputs.
+- `database/` is reserved for database integration.
+- `utils/` contains shared styling, calculations, data loading, and helpers.
+- `notebooks/` is reserved for exploration and model development.
+- `tests/` is reserved for automated checks.
+
+## Loan Applications — Part 1
+
+The Application Management workspace includes four live summary cards, combined name/ID/phone, status, purpose, and date filters, a reset action, a readable application table, filtered CSV/Excel exports, and View actions for opening the selected record. Summary definitions are consistent: Pending Review combines Pending and Under Review; Under Assessment counts that status; Completed combines Approved and Rejected. Risk in the table uses the latest risk summary already stored with the record and falls back to “Not Assessed”; this page does not generate risk values.
+
+The requested refinement is limited to Part 1, the Application Management workspace. Further workflow and detail-view expansions are not included in this part.
+
+## Data and prototype limits
+
+The Dashboard, Loan Applications, Credit Assessment, and Debt & Affordability pages use demonstration data. Loan application submissions, assessment statuses, document verification, findings, recommendations, and activity are stored in the same application record for the current Streamlit session. There is no production database, live banking data, trained credit model, or final lending decision workflow.
+
+## Credit Assessment workspace
+
+The Credit Assessment queue only includes records submitted to the assessment stage. It reads applicant information from the shared Loan Applications session records and stores assessment review state inside each same record. The workspace supports applicant-field verification, document-status review, financial information completeness, analyst findings, recommendation justification, and an assessment activity history. Recommendations remain separate from final lending decisions.
+
+Credit model outputs and K-Means borrower segmentation are placeholders; no predictions are generated. Financial values use the source record, and unavailable credit history or monthly debt-payment data is labeled as unavailable. Assessment history is session data, not a production audit log. Dashboard integration, a database, bureau data, document uploads, trained models, and repayment history remain future work.
+
+## Debt & Affordability - Parts 1-6
+
+The Financial Analysis workspace selects only applications eligible for assessment and filters them by application ID or name, borrower type, loan purpose, application status, and assessment status. It reads the same session record as Loan Applications and Credit Assessment. The Financial Overview shows available values, missing information, verification status, and last recorded activity. Part 2 provides personal income-source capture and frequency normalization, business revenue capture and normalization, review statuses, and a conditional monthly CFADS calculation. Part 3 provides category-based living/operating expense entry and existing-debt records for personal and business applicants, with separate balances, monthly payments, verification status, and source provenance. It reuses Part 2 business expense entries and preserves ambiguous legacy aggregates without including them in category totals. Part 4 adds a fixed-rate loan calculator, personal DTI/DSTI and income measures, business DSCR and remaining cash flow, plus policy-neutral human interpretation. Repayment Capacity KPI card rows have a 24 px transparent spacer for readability. Part 5 adds scenario simulation and stress testing for personal and business loans. It reuses Parts 1-4 normalized inputs, compares original analysis values with simulations, and saves optional scenario snapshots separately from original application terms. Stress cases cover income/revenue, expenses, existing debt service, interest rate, loan amount, term, and frequency. Scenarios are illustrative and do not make predictions or policy decisions. Part 6 provides a live Personal/Business financial report, current income/expense/debt detail, Part 4 capacity results, Part 5 saved scenarios, missing-information flags, editable analyst findings, a print-styled preview, and PDF/CSV exports. Analyst findings stay separate from calculated results. The report is an internal review aid and does not represent a final loan decision.
+
+Current application records contain individual-style applicant fields, monthly income, monthly expenses, an existing-debt field with unspecified balance/payment semantics, other obligations, requested loan amount, purpose, term, status, and history. They do not currently define borrower type, currency, gross/net income, income frequency, monthly debt payments, interest rate, or installment. Business name/type, industry, revenue, operating expenses, and business debt-service fields are also absent. The page displays the borrower type as “Not specified” unless the record explicitly identifies it; it does not infer business or personal type from loan purpose. Part 2 captures analyst-entered income/revenue/expense details in a separate `financial_analysis.income_cash_flow` object on the same session record; original application values are preserved. Part 3 stores categorized obligations separately in `financial_analysis.obligations`, including applicant-declared values, staff adjustments, verification status, and timestamps. A staff adjustment supersedes its matching declaration in summaries without double-counting it. Part 4 stores calculator inputs and calculated outputs separately in `financial_analysis.repayment_capacity`; it does not overwrite original loan terms. Monthly normalization uses Monthly = 1, Weekly = 52/12, Biweekly = 26/12, and Annual = 1/12. Aggregate totals require a currency label and analyst confirmation that entries share that currency. Business CFADS is shown only when normalized revenue, explicit review of other operating income, and all eight listed operating cost categories (including zero amounts) are recorded; it is defined as revenue plus other operating income less operating cash costs, before debt service. Historical revenue trends require at least two explicitly dated reporting months; no trend data is fabricated. Repayment results use an amortizing fixed-rate assumption with level payments; fees are excluded. No underwriting policy thresholds are configured, so metrics are not automatically classified.
+
+
+## Navigation and performance
+
+The Dashboard is the default landing page. Sidebar destinations use the `?page=` URL route, so supported pages can be opened directly and browser back/forward changes the selected page. The same selected page drives the navbar title, breadcrumb, and active sidebar button. Expanded navigation items no longer repeat their visible text in hover tooltips; collapsed icon navigation retains helpful labels.
+
+The app shell dispatches each existing module explicitly, including the six-tab Loan Monitoring workspace and the Banking Analytics placeholder. Dashboard demonstration DataFrames are cached by reporting date with `st.cache_data`, which returns isolated copies; shared applicant/application records remain in session state and are never cached. Lazy module imports remain in place. Redundant post-submit reruns were removed from Debt & Affordability entry forms where the current Streamlit pass already renders the updated totals and records. No dependency was added.
+
+
+## Loan Monitoring
+
+The Loan Portfolio Monitoring workspace provides six connected tabs: Loan Overview, Loan Accounts, Repayment Schedule, Overdue Monitoring, Collection & Follow-up, and Monitoring Reports. The Dashboard remains the default page, and Loan Monitoring uses the existing sidebar and navbar navigation. All monitoring records are stored under the existing application in `loan_application_records`; the module does not create duplicate borrowers or application records.
+
+An account is eligible only when the same application record has a unique `loan_monitoring.loan_account_id`, an application ID, an explicit `loan_monitoring.disbursement.status` of `Disbursed`, a valid `disbursed_at`, positive disbursed amount and currency, and explicit `account_status` of `Active` or `Fully Repaid`. Analyst recommendations and generic application status do not create a lending decision or disbursement. Where this prototype has no formal lending decision workflow, Loan Accounts can record an externally authorized decision reference, decision date, approved terms, and actual disbursement after staff confirmation. This is staff-entered and unverified; it does not approve a loan or change the application status. Dashboard demonstration loans are not used by Monitoring.
+
+The shared record extension includes `final_lending_decision` (externally sourced status, reference, decision date, approved amount, currency, and source) and `loan_monitoring`: `loan_account_id`, `applicant_id`, `account_status`, `disbursement` (status, date, approved and actual amounts, currency, annual rate, term, frequency, first due date, maturity, decision reference, recorder, and verification source), `repayment_schedule`, `payments`, `activities`, `collection_activities`, `promises`, follow-up flag, and collection status. Schedule rows keep opening principal, scheduled principal and interest, total installment, paid principal and interest, amount paid, due date, and currency. Payment records preserve transaction ID/date/reference, received amount, principal/interest allocations, method, notes, recorder, linked installment allocations, and status. Collection and promise histories are separate from payment transactions.
+
+Schedules use fixed nominal-rate amortization with monthly or quarterly installments, decimal cent rounding, and a final principal adjustment. Quarterly terms must be divisible by three months. Zero interest is supported. Payments allocate to the oldest unpaid installments, interest first and principal second; partial payments are supported and overpayments, fees, penalties, reversals, and interest accrual between installments are not. Outstanding principal is disbursed principal less actual recorded principal allocations. A newly recorded account becomes Fully Repaid only when principal and scheduled obligations both reach zero. Existing status/balance conflicts are flagged for review.
+
+DPD is calendar days after the due date of an unpaid installment. A partially paid installment remains overdue for its unpaid amount after the due date. An account's DPD uses its oldest unpaid installment; aging buckets are current, 1-30, 31-60, 61-90, and over 90 days. This is not a legal delinquency or default classification. Portfolio and payment totals require one known currency; missing or mixed-currency values are not combined. Payment performance rates use recorded payments with payment and linked due dates. Risk charts require an explicitly validated assessment risk category; source demo risk labels and analyst recommendations are excluded.
+
+Monitoring Reports apply account filters consistently and provide portfolio, repayment, overdue aging, and collection summaries with CSV, Excel, and a standard-font PDF export. Reports are labeled internal and for review purposes only. The app uses session-state storage, so records do not persist across sessions or users and do not provide a production audit trail. Current demo records contain no real decision references, disbursements, payment schedules, payment transactions, or collection history; empty states are shown until such information is entered. This is an academic demonstration, not a production banking or servicing system.
+
+### Loan Monitoring data availability audit
+
+Loan Monitoring now initializes the shared application demo records when opened directly before another module has initialized them. This fixes an empty approved-application selector caused by an absent session key; it does not create loan accounts or monitoring transactions. Overview and report empty states distinguish no eligible disbursements from filters that exclude existing eligible accounts. A missing schedule on an existing Active disbursed account can be generated in place only after staff confirms the authorized rate, term, frequency, first due date, and currency. The feature will not reconstruct schedules after payments have been recorded or for non-Active historical accounts. Incomplete schedule rows no longer produce partial scheduled-obligation totals, and report payment trends can use the owning account currency when a legacy transaction omits its own currency. Application records still have no applicant ID field; application ID is the shared integration key, and a unique loan account ID is recorded only during monitoring setup. Session data remains nonpersistent across sessions/users.
+
+The audit verified that Overview, Accounts, Repayment Schedule, Overdue Monitoring, Collection & Follow-up, and Monitoring Reports are implemented; the latter five are not placeholders. In the included demo dataset, no explicit external final decision reference, disbursement, schedule, payment, overdue event, or collection activity exists, so related empty states are expected until staff records real authorized data. See `tests/test_loan_monitoring.py` for AppTest coverage of direct navigation, schedule creation, partial payment, collection/promises, report exports, eligibility, filters, and navigation persistence.
+
+## Banking Analytics — Task 7
+
+Banking Analytics is a read-only six-tab portfolio analysis workspace built on the existing `loan_application_records` session data. Its global reporting, borrower, purpose, application/decision/loan status, and stored risk filters are shared across Portfolio Overview, Loan Portfolio Analysis, Credit Risk Analytics, Repayment & Delinquency Analytics, Customer & Borrower Analytics, and Financial Performance & Reports. Date filters use application dates for application cohorts, actual disbursement dates for disbursement cohorts, repayment due dates for scheduled-installment cohorts, and transaction dates for recorded-payment cohorts. Current outstanding balances and current delinquency use current Loan Monitoring state because historical balance snapshots are not stored.
+
+The analytics reuses Loan Monitoring account eligibility, principal balances, DPD, and schedule calculations. It distinguishes application status, explicit final decision status, and loan lifecycle status; only an explicit final decision counts as approved and only an eligible explicit disbursement counts as a monitored loan. Credit risk analytics reads stored risk summaries/source labels, never creates a score or ML prediction. Part 4 DTI, DSTI, and DSCR values, Part 2 income/revenue sources, and recorded employment/business fields are included only where stored and appropriately periodized. Borrower type is not inferred from loan purpose; an explicitly saved Part 2 working classification is used when present. Direct borrower names and contact data are omitted from analytical tables in favor of application identifiers.
+
+Repayment metrics aggregate actual Loan Monitoring schedules and transactions, exclude future installments from overdue, and use unique outstanding principal for current PAR30/PAR60/PAR90. PAR is unavailable when account currency, balances, or schedules are incomplete; historical PAR and balance trends require snapshots and are not reconstructed. Financial indicators include actual disbursements, current outstanding principal, actual principal/interest allocations, overdue amounts, and average requested amounts only with a consistent known currency. No accounting-system feed, funding cost, expense data, or profitability basis exists, so profitability is not calculated. Six internal report types export filtered rows and metadata to CSV, Excel, and PDF; reports are not audited financial statements. Shared data remains in Streamlit session state and does not persist across users or sessions.
+
+`tests/test_banking_analytics.py` covers application deduplication, explicit final decisions, date-source separation, disbursement and repayment aggregations, currency/schedule safeguards for PAR, all six tab rendering, filter reset/empty states, export registration, direct navigation, and read-only behavior. Run with `python -m unittest tests.test_banking_analytics -q` and launch using `python -m streamlit run app.py`.
