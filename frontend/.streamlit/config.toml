@@ -1,0 +1,130 @@
+# FinGuard AI — Banking Decision-Support Theme
+# Native dual-mode theme with restrained navy-blue & white banking palette
+
+[theme]
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "8px"
+buttonRadius = "8px"
+font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+baseFontSize = 14
+baseFontWeight = 400
+codeFontSize = "13px"
+headingFontSizes = ["26px", "20px", "16px", "15px", "14px", "12px"]
+headingFontWeights = [700, 600, 600, 600, 500, 500]
+linkUnderline = false
+paddingTop = "0.75rem"
+paddingBottom = "2.5rem"
+
+[theme.light]
+primaryColor = "#1B3A6B"
+backgroundColor = "#F8FAFC"
+secondaryBackgroundColor = "#FFFFFF"
+codeBackgroundColor = "#F1F5F9"
+textColor = "#0F172A"
+linkColor = "#1D4ED8"
+borderColor = "#E2E8F0"
+codeTextColor = "#334155"
+greenColor = "#059669"
+redColor = "#DC2626"
+yellowColor = "#D97706"
+orangeColor = "#EA580C"
+blueColor = "#1D4ED8"
+violetColor = "#6366F1"
+grayColor = "#64748B"
+chartCategoricalColors = [
+    "#1B3A6B",
+    "#2563EB",
+    "#059669",
+    "#D97706",
+    "#DC2626",
+    "#0284C7",
+    "#6366F1",
+    "#64748B",
+]
+chartSequentialColors = [
+    "#EFF6FF",
+    "#DBEAFE",
+    "#BFDBFE",
+    "#93C5FD",
+    "#60A5FA",
+    "#3B82F6",
+    "#2563EB",
+    "#1D4ED8",
+    "#1E40AF",
+    "#1B3A6B",
+]
+dataframeBorderColor = "#E2E8F0"
+dataframeHeaderBackgroundColor = "#F1F5F9"
+dataframeHeaderTextColor = "#0F172A"
+
+[theme.dark]
+primaryColor = "#3B82F6"
+backgroundColor = "#0B1220"
+secondaryBackgroundColor = "#131F35"
+codeBackgroundColor = "#1E293B"
+textColor = "#F1F5F9"
+linkColor = "#60A5FA"
+borderColor = "#24344D"
+codeTextColor = "#CBD5E1"
+greenColor = "#34D399"
+redColor = "#F87171"
+yellowColor = "#FBBF24"
+orangeColor = "#FB923C"
+blueColor = "#60A5FA"
+violetColor = "#818CF8"
+grayColor = "#94A3B8"
+chartCategoricalColors = [
+    "#60A5FA",
+    "#34D399",
+    "#FBBF24",
+    "#F87171",
+    "#38BDF8",
+    "#818CF8",
+    "#94A3B8",
+    "#FB923C",
+]
+chartSequentialColors = [
+    "#0B192C",
+    "#102542",
+    "#153259",
+    "#1B3A6B",
+    "#1D4ED8",
+    "#2563EB",
+    "#3B82F6",
+    "#60A5FA",
+    "#93C5FD",
+    "#DBEAFE",
+]
+dataframeBorderColor = "#24344D"
+dataframeHeaderBackgroundColor = "#17253D"
+dataframeHeaderTextColor = "#F8FAFC"
+
+[theme.sidebar]
+paddingTop = "0.75rem"
+paddingBottom = "1.5rem"
+
+[theme.light.sidebar]
+backgroundColor = "#0F2342"
+secondaryBackgroundColor = "#18335C"
+codeBackgroundColor = "#18335C"
+codeTextColor = "#E2E8F0"
+textColor = "#F8FAFC"
+borderColor = "#254473"
+primaryColor = "#3B82F6"
+linkColor = "#93C5FD"
+
+[theme.dark.sidebar]
+backgroundColor = "#070E1A"
+secondaryBackgroundColor = "#111D33"
+codeBackgroundColor = "#111D33"
+codeTextColor = "#E2E8F0"
+textColor = "#F1F5F9"
+borderColor = "#1E2D47"
+primaryColor = "#3B82F6"
+linkColor = "#93C5FD"
+
+[server]
+runOnSave = true

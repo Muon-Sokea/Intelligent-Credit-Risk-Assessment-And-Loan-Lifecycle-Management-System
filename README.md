@@ -1,5 +1,6 @@
 # FinGuard AI
 
+<<<<<<< HEAD
 FinGuard AI is a Streamlit project scaffold for loan operations, credit assessment, debt analysis, loan monitoring, and banking analytics.
 
 ## Run locally
@@ -84,3 +85,59 @@ The analytics reuses Loan Monitoring account eligibility, principal balances, DP
 Repayment metrics aggregate actual Loan Monitoring schedules and transactions, exclude future installments from overdue, and use unique outstanding principal for current PAR30/PAR60/PAR90. PAR is unavailable when account currency, balances, or schedules are incomplete; historical PAR and balance trends require snapshots and are not reconstructed. Financial indicators include actual disbursements, current outstanding principal, actual principal/interest allocations, overdue amounts, and average requested amounts only with a consistent known currency. No accounting-system feed, funding cost, expense data, or profitability basis exists, so profitability is not calculated. Six internal report types export filtered rows and metadata to CSV, Excel, and PDF; reports are not audited financial statements. Shared data remains in Streamlit session state and does not persist across users or sessions.
 
 `tests/test_banking_analytics.py` covers application deduplication, explicit final decisions, date-source separation, disbursement and repayment aggregations, currency/schedule safeguards for PAR, all six tab rendering, filter reset/empty states, export registration, direct navigation, and read-only behavior. Run with `python -m unittest tests.test_banking_analytics -q` and launch using `python -m streamlit run app.py`.
+=======
+Intelligent credit risk assessment and loan lifecycle management system (decision-support prototype).
+
+Model outputs support human review. They are not automated lending decisions. The
+staff-role selector is a prototype navigation aid, not production authentication.
+
+## Structure
+
+```
+data/raw/dataset.csv      raw dataset (never edit by hand)
+ml/                       cleaning, features, training, evaluation, service
+notebooks/                01 EDA, 02 cleaning, 03 modelling, 04 evaluation
+models/                   trained model artifacts
+backend_fastapi/          API option A
+backend_django/           API option B
+frontend/                 Streamlit app (7 modules, in-session demo data)
+tests/                    pytest (pipeline + frontend)
+docs/use_case_diagram.txt plain-text use case diagram
+reports/                  final report template and figures
+```
+
+## Setup
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+pip install -r frontend/requirements.txt
+```
+
+## Run
+
+```bash
+cd frontend
+python -m streamlit run app.py        # http://localhost:8501
+```
+
+```bash
+python -m ml.data.make_dataset        # raw -> data/processed/clean.csv
+python -m ml.train                    # compare, tune, evaluate, save model
+pytest                                # run all tests
+```
+
+## Frontend modules
+
+Dashboard, Loan applications, Credit assessment, Debt analysis, Loan management,
+Risk monitoring, Banking analytics. Theme is in `frontend/.streamlit/config.toml`.
+
+## Current limits
+
+- Frontend uses illustrative demo records stored in the Streamlit session only.
+- Credit assessment shows rule-based indicators; connect `ml/` model via the API next.
+- `ml/config.py` and `ml/data/make_dataset.py` still target the original dataset columns;
+  adapt them to your credit-risk dataset (see `data/README.md`).
+- Fraud detection, OCR/e-KYC, and Khmer chatbot are out of scope for the initial build.
+>>>>>>> ec2ad9c (Updated new web application UX/Ui interface)
