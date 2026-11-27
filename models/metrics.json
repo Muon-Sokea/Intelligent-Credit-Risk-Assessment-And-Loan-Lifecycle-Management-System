@@ -1,0 +1,120 @@
+{
+  "trained_at": "2026-11-26T06:35:55",
+  "task_type": "classification",
+  "target": "loan_status",
+  "primary_metric": "roc_auc",
+  "best_model": "Gradient Boosting",
+  "best_params": {
+    "n_estimators": 300,
+    "max_depth": 4,
+    "learning_rate": 0.03
+  },
+  "tuned_cv_score": 0.9349,
+  "n_train": 25932,
+  "n_test": 6484,
+  "cv_results": [
+    {
+      "model": "Gradient Boosting",
+      "cv_accuracy_mean": 0.9253,
+      "cv_accuracy_std": 0.0028,
+      "cv_precision_mean": 0.9385,
+      "cv_precision_std": 0.0106,
+      "cv_recall_mean": 0.7045,
+      "cv_recall_std": 0.006,
+      "cv_f1_mean": 0.8048,
+      "cv_f1_std": 0.007,
+      "cv_roc_auc_mean": 0.9284,
+      "cv_roc_auc_std": 0.0032
+    },
+    {
+      "model": "Random Forest",
+      "cv_accuracy_mean": 0.9258,
+      "cv_accuracy_std": 0.0015,
+      "cv_precision_mean": 0.905,
+      "cv_precision_std": 0.0078,
+      "cv_recall_mean": 0.7381,
+      "cv_recall_std": 0.0062,
+      "cv_f1_mean": 0.813,
+      "cv_f1_std": 0.0039,
+      "cv_roc_auc_mean": 0.9282,
+      "cv_roc_auc_std": 0.0025
+    },
+    {
+      "model": "Logistic Regression",
+      "cv_accuracy_mean": 0.8167,
+      "cv_accuracy_std": 0.004,
+      "cv_precision_mean": 0.5588,
+      "cv_precision_std": 0.0071,
+      "cv_recall_mean": 0.769,
+      "cv_recall_std": 0.0095,
+      "cv_f1_mean": 0.6472,
+      "cv_f1_std": 0.0064,
+      "cv_roc_auc_mean": 0.8722,
+      "cv_roc_auc_std": 0.0046
+    },
+    {
+      "model": "Decision Tree",
+      "cv_accuracy_mean": 0.8886,
+      "cv_accuracy_std": 0.0016,
+      "cv_precision_mean": 0.7421,
+      "cv_precision_std": 0.0052,
+      "cv_recall_mean": 0.7522,
+      "cv_recall_std": 0.0114,
+      "cv_f1_mean": 0.7471,
+      "cv_f1_std": 0.0049,
+      "cv_roc_auc_mean": 0.8395,
+      "cv_roc_auc_std": 0.0047
+    }
+  ],
+  "test_metrics": {
+    "accuracy": 0.9343,
+    "precision": 0.9688,
+    "recall": 0.7228,
+    "f1": 0.8279,
+    "roc_auc": 0.9315
+  },
+  "confusion_matrix": {
+    "labels": [
+      0,
+      1
+    ],
+    "matrix": [
+      [
+        5033,
+        33
+      ],
+      [
+        393,
+        1025
+      ]
+    ]
+  },
+  "feature_importance": {
+    "income_to_loan_ratio": 0.3101,
+    "loan_int_rate": 0.1608,
+    "person_home_ownership_RENT": 0.1584,
+    "person_income": 0.1134,
+    "loan_grade_D": 0.0542,
+    "loan_intent_DEBTCONSOLIDATION": 0.0302,
+    "loan_grade_C": 0.0257,
+    "loan_intent_MEDICAL": 0.0253,
+    "person_emp_length": 0.0252,
+    "person_home_ownership_OWN": 0.0201,
+    "loan_intent_HOMEIMPROVEMENT": 0.015,
+    "loan_percent_income": 0.0144,
+    "person_age": 0.0098,
+    "loan_grade_E": 0.0084,
+    "loan_grade_A": 0.0046,
+    "emp_to_age_ratio": 0.0044,
+    "loan_grade_F": 0.004,
+    "loan_grade_G": 0.0039,
+    "loan_intent_VENTURE": 0.0036,
+    "loan_grade_B": 0.0014
+  },
+  "figures": [
+    "model_comparison.png",
+    "feature_importance.png",
+    "confusion_matrix.png",
+    "roc_curve.png"
+  ]
+}

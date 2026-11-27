@@ -1,0 +1,91 @@
+@startuml
+left to right direction
+
+actor "Loan Officer" as LO
+actor "Credit Analyst" as CA
+actor "Loan Manager" as LM
+actor "Risk Management Officer" as RO
+actor "Customer Service Officer" as CS
+actor "ML Pipeline (Scoring Service)" as ML
+
+rectangle "FinGuard AI - Credit Risk and Loan Lifecycle Management System" {
+
+    usecase "Select Staff Role View" as UC1
+
+    usecase "View Dashboard KPIs and Alerts" as UC2
+
+    usecase "Create Loan Application" as UC3
+    usecase "Search / Filter / Export Applications" as UC4
+    usecase "Verify Applicant Documents" as UC5
+    usecase "Send to Credit Assessment" as UC6
+
+    usecase "View Indicative Default Risk" as UC7
+    usecase "Compute Default Probability" as UC8
+    usecase "Review Thin-File / Alternative Data" as UC9
+    usecase "Record Analyst Recommendation" as UC10
+
+    usecase "Analyse Income and Debt (DTI / DSCR)" as UC11
+    usecase "Calculate Loan Installment" as UC12
+    usecase "Run Borrower Stress Test" as UC13
+
+    usecase "Record Disbursement" as UC14
+    usecase "Generate Repayment Schedule" as UC15
+    usecase "View / Export Repayment Schedule" as UC16
+    usecase "Record Borrower Payment" as UC17
+
+    usecase "Monitor DPD / Aging / PAR30" as UC18
+    usecase "View Early-Warning Watch List" as UC19
+    usecase "Log Collection Follow-up" as UC20
+
+    usecase "Analyse Portfolio Mix and Inclusion" as UC21
+    usecase "Run Macro-Economic Stress Simulation" as UC22
+}
+
+LO --> UC1
+LO --> UC2
+LO --> UC3
+LO --> UC4
+LO --> UC5
+LO --> UC6
+LO --> UC11
+LO --> UC12
+
+CA --> UC1
+CA --> UC2
+CA --> UC4
+CA --> UC7
+CA --> UC9
+CA --> UC10
+CA --> UC11
+CA --> UC12
+CA --> UC13
+
+LM --> UC1
+LM --> UC2
+LM --> UC14
+LM --> UC16
+LM --> UC17
+LM --> UC18
+LM --> UC20
+LM --> UC21
+
+RO --> UC1
+RO --> UC2
+RO --> UC7
+RO --> UC18
+RO --> UC19
+RO --> UC20
+RO --> UC21
+RO --> UC22
+
+CS --> UC1
+CS --> UC2
+CS --> UC16
+
+ML --> UC8
+
+UC7 ..> UC8 : <<include>>
+UC14 ..> UC15 : <<include>>
+UC6 ..> UC5 : <<extend>>
+UC19 ..> UC18 : <<extend>>
+@enduml

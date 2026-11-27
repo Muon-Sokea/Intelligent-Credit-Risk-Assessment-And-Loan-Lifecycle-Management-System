@@ -1,0 +1,186 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+class StaffRole {
+    +name : String
+    +description : String
+    +allowedPages : List<String>
+    +canAccess(page : String) : boolean
+}
+
+class LoanApplication {
+    +applicationId : String
+    +applicationDate : Date
+    +loanAmount : float
+    +loanPurpose : String
+    +loanTermMonths : int
+    +interestRate : float
+    +status : String
+    +recommendation : String
+    +analystNotes : String
+    +thinFile : boolean
+    +altDataVerified : boolean
+    +riskTier : String
+    +riskPdPct : float
+    +projectedDti : float
+    +estimatedInstallment : float
+    +submit() : void
+    +sendToAssessment() : void
+    +refreshMetrics() : void
+}
+
+class Borrower {
+    +name : String
+    +borrowerType : String
+    +phone : String
+    +email : String
+    +province : String
+    +employmentStatus : String
+    +occupation : String
+    +workExperienceYears : float
+}
+
+class FinancialProfile {
+    +monthlyIncome : float
+    +monthlyExpenses : float
+    +existingDebtBalance : float
+    +monthlyDebtPayment : float
+    +debtToIncome() : float
+    +netSurplus() : float
+}
+
+class DocumentChecklist {
+    +idKyc : boolean
+    +incomeProof : boolean
+    +bankStatements : boolean
+    +collateral : boolean
+    +verifiedCount() : int
+}
+
+class RiskAssessment {
+    +pdPct : float
+    +tier : String
+    +projectedDti : float
+    +expenseRatio : float
+    +netSurplus : float
+    +factors : List<RiskFactor>
+}
+
+class RiskFactor {
+    +title : String
+    +detail : String
+    +severity : String
+}
+
+class LoanAccount {
+    +loanAccountId : String
+    +disbursedDate : Date
+    +status : String
+    +outstandingPrincipal() : float
+    +disburse() : void
+    +isFullyRepaid() : boolean
+}
+
+class RepaymentInstallment {
+    +installmentNo : int
+    +dueDate : Date
+    +openingBalance : float
+    +scheduledPrincipal : float
+    +scheduledInterest : float
+    +totalDue : float
+    +amountPaid : float
+    +remainingDue : float
+    +closingBalance : float
+    +status : String
+}
+
+class Payment {
+    +paymentId : String
+    +paymentDate : Date
+    +amount : float
+    +method : String
+    +notes : String
+}
+
+class CollectionLog {
+    +date : Date
+    +officer : String
+    +channel : String
+    +outcome : String
+    +promiseDate : Date
+}
+
+class ActivityLog {
+    +timestamp : String
+    +actor : String
+    +event : String
+}
+
+class DelinquencyStatus {
+    +dpd : int
+    +agingBucket : String
+    +overdueAmount : float
+}
+
+class CalculationService <<utility>> {
+    +monthlyLoanPayment(principal, rate, months) : float
+    +debtToIncomeRatio(debt, income) : float
+    +debtServiceCoverageRatio(noi, debtService) : float
+    +buildAmortizationSchedule(...) : List<RepaymentInstallment>
+    +calculateDpdAndBucket(schedule) : DelinquencyStatus
+    +illustrativeRiskAssessment(application) : RiskAssessment
+}
+
+class SessionStore <<service>> {
+    +loanRecords : List<LoanApplication>
+    +staffRole : StaffRole
+    +getRecords() : List<LoanApplication>
+    +getRecordById(id : String) : LoanApplication
+    +nextApplicationId() : String
+    +recordsToDataFrame() : DataFrame
+}
+
+class MLService <<service>> {
+    +modelPath : String
+    +makePrediction(features) : Prediction
+    +getMetrics() : Metrics
+}
+
+class Prediction {
+    +label : String
+    +probabilities : Map
+}
+
+class StressScenario {
+    +incomeShockPct : float
+    +rateShockPp : float
+    +expenseShockPct : float
+    +stressedDti : float
+    +stressedSurplus : float
+    +run() : void
+}
+
+Borrower "1" -- "0..*" LoanApplication : submits
+LoanApplication "1" *-- "1" FinancialProfile
+LoanApplication "1" *-- "1" DocumentChecklist
+LoanApplication "1" *-- "0..*" ActivityLog
+LoanApplication "1" --> "1" RiskAssessment : evaluated by
+RiskAssessment "1" *-- "0..*" RiskFactor
+LoanApplication "1" o-- "0..1" LoanAccount : disbursed as
+LoanAccount "1" *-- "0..*" RepaymentInstallment : schedule
+LoanAccount "1" *-- "0..*" Payment
+LoanAccount "1" *-- "0..*" CollectionLog
+LoanAccount "1" --> "1" DelinquencyStatus
+Payment "0..*" ..> "1..*" RepaymentInstallment : allocated to
+SessionStore "1" o-- "0..*" LoanApplication
+SessionStore "1" --> "1" StaffRole : active role
+CalculationService ..> LoanApplication : reads
+CalculationService ..> RiskAssessment : creates
+CalculationService ..> RepaymentInstallment : creates
+CalculationService ..> DelinquencyStatus : creates
+StressScenario ..> LoanApplication : simulates
+StressScenario ..> CalculationService : uses
+MLService ..> Prediction : returns
+CalculationService ..> MLService : future integration
+@enduml

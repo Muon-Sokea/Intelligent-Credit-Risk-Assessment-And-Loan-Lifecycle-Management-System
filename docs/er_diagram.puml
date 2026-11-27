@@ -1,0 +1,173 @@
+@startuml
+hide circle
+skinparam linetype ortho
+left to right direction
+
+entity "ROLE" as role {
+    *role_id : INT <<PK>>
+    --
+    role_name : VARCHAR
+    description : VARCHAR
+}
+
+entity "MODULE" as module {
+    *module_id : INT <<PK>>
+    --
+    module_name : VARCHAR
+    url_path : VARCHAR
+}
+
+entity "ROLE_MODULE_ACCESS" as rma {
+    *role_id : INT <<PK, FK>>
+    *module_id : INT <<PK, FK>>
+}
+
+entity "STAFF" as staff {
+    *staff_id : INT <<PK>>
+    --
+    full_name : VARCHAR
+    role_id : INT <<FK>>
+}
+
+entity "BORROWER" as borrower {
+    *borrower_id : INT <<PK>>
+    --
+    full_name : VARCHAR
+    borrower_type : VARCHAR
+    phone : VARCHAR
+    email : VARCHAR
+    province : VARCHAR
+    employment_status : VARCHAR
+    occupation : VARCHAR
+    work_experience_years : DECIMAL
+}
+
+entity "LOAN_APPLICATION" as app {
+    *application_id : VARCHAR <<PK>>
+    --
+    borrower_id : INT <<FK>>
+    created_by : INT <<FK>>
+    application_date : DATE
+    loan_amount : DECIMAL
+    loan_purpose : VARCHAR
+    loan_term_months : INT
+    interest_rate : DECIMAL
+    status : VARCHAR
+    recommendation : VARCHAR
+    analyst_notes : TEXT
+    thin_file : BOOLEAN
+    alt_data_verified : BOOLEAN
+}
+
+entity "FINANCIAL_PROFILE" as fin {
+    *profile_id : INT <<PK>>
+    --
+    application_id : VARCHAR <<FK, UQ>>
+    monthly_income : DECIMAL
+    monthly_expenses : DECIMAL
+    existing_debt_balance : DECIMAL
+    monthly_debt_payment : DECIMAL
+}
+
+entity "RISK_ASSESSMENT" as risk {
+    *assessment_id : INT <<PK>>
+    --
+    application_id : VARCHAR <<FK, UQ>>
+    assessed_by : INT <<FK>>
+    pd_pct : DECIMAL
+    risk_tier : VARCHAR
+    projected_dti : DECIMAL
+    net_surplus : DECIMAL
+}
+
+entity "DOCUMENT_CHECK" as doc {
+    *document_id : INT <<PK>>
+    --
+    application_id : VARCHAR <<FK>>
+    document_type : VARCHAR
+    is_verified : BOOLEAN
+}
+
+entity "ACTIVITY_LOG" as act {
+    *log_id : INT <<PK>>
+    --
+    application_id : VARCHAR <<FK>>
+    staff_id : INT <<FK>>
+    event : VARCHAR
+    logged_at : DATETIME
+}
+
+entity "LOAN_ACCOUNT" as acct {
+    *loan_account_id : VARCHAR <<PK>>
+    --
+    application_id : VARCHAR <<FK, UQ>>
+    disbursed_date : DATE
+    status : VARCHAR
+}
+
+entity "REPAYMENT_INSTALLMENT" as inst {
+    *installment_id : INT <<PK>>
+    --
+    loan_account_id : VARCHAR <<FK>>
+    installment_no : INT
+    due_date : DATE
+    scheduled_principal : DECIMAL
+    scheduled_interest : DECIMAL
+    total_due : DECIMAL
+    amount_paid : DECIMAL
+    status : VARCHAR
+}
+
+entity "PAYMENT" as pay {
+    *payment_id : INT <<PK>>
+    --
+    loan_account_id : VARCHAR <<FK>>
+    recorded_by : INT <<FK>>
+    payment_date : DATE
+    amount : DECIMAL
+    method : VARCHAR
+}
+
+entity "PAYMENT_ALLOCATION" as alloc {
+    *payment_id : INT <<PK, FK>>
+    *installment_id : INT <<PK, FK>>
+    --
+    amount_applied : DECIMAL
+}
+
+entity "COLLECTION_LOG" as coll {
+    *collection_id : INT <<PK>>
+    --
+    loan_account_id : VARCHAR <<FK>>
+    staff_id : INT <<FK>>
+    contact_date : DATE
+    channel : VARCHAR
+    outcome : TEXT
+    promise_date : DATE
+}
+
+' ---- 1 to many ----
+role      ||--o{ staff    : "is assigned to"
+borrower  ||--o{ app      : "submits"
+staff     ||--o{ app      : "creates"
+app       ||--o{ doc      : "requires"
+app       ||--o{ act      : "records"
+staff     ||--o{ act      : "performs"
+acct      ||--o{ inst     : "is repaid through"
+acct      ||--o{ pay      : "receives"
+staff     ||--o{ pay      : "records"
+acct      ||--o{ coll     : "is followed up by"
+staff     ||--o{ coll     : "logs"
+staff     ||--o{ risk     : "reviews"
+
+' ---- 1 to 1 ----
+app       ||--|| fin      : "is described by"
+app       ||--|| risk     : "is evaluated by"
+app       ||--o| acct     : "is disbursed as"
+
+' ---- many to many (via junction tables) ----
+role      ||--o{ rma      : "grants"
+module    ||--o{ rma      : "is accessed through"
+pay       ||--o{ alloc    : "is applied via"
+inst      ||--o{ alloc    : "is settled via"
+@enduml

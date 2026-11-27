@@ -1,0 +1,81 @@
+FINGUARD AI - USE CASE DIAGRAM (PLAIN TEXT)
+==========================================================================
+Note: all model outputs are DECISION SUPPORT only. Final lending decisions
+remain with authorised bank staff.
+
+ACTORS
+  [LO]  Loan Officer
+  [CA]  Credit Analyst
+  [LM]  Loan Manager
+  [RO]  Risk Management Officer
+  [CS]  Customer Service Officer
+  [ML]  ML Pipeline (secondary / system actor: scoring service)
+
++==========================================================================+
+|                         FinGuard AI System                               |
+|                                                                          |
+|  --- Dashboard ---                                                       |
+|  (UC1)  View portfolio KPIs and priority alerts                          |
+|                                                                          |
+|  --- Loan Applications ---                                               |
+|  (UC2)  Create new loan application                                      |
+|  (UC3)  Search / filter / export applications                            |
+|  (UC4)  Verify applicant documents (KYC, income, statements, collateral) |
+|  (UC5)  Send application to credit assessment                            |
+|                                                                          |
+|  --- Credit Assessment ---                                               |
+|  (UC6)  View indicative default risk and risk factors  --<<include>>--+  |
+|  (UC7)  Review thin-file / alternative data (financial inclusion)     |  |
+|  (UC8)  Record analyst recommendation and update status               |  |
+|  (UC9)  Compute default probability  <---------------------------------+ |
+|                                                                          |
+|  --- Debt Analysis ---                                                   |
+|  (UC10) Analyse income, expenses and existing obligations (DTI / DSCR)   |
+|  (UC11) Calculate loan installment                                       |
+|  (UC12) Run borrower stress test (income / rate / expense shocks)        |
+|                                                                          |
+|  --- Loan Management ---                                                 |
+|  (UC13) Record disbursement  --<<include>>--> (UC14) Generate schedule   |
+|  (UC15) View repayment schedule / export CSV                             |
+|  (UC16) Record borrower payment                                          |
+|                                                                          |
+|  --- Risk Monitoring ---                                                 |
+|  (UC17) Monitor DPD, aging buckets, PAR30                                |
+|  (UC18) View early-warning watch list                                    |
+|  (UC19) Log collection follow-up / promise-to-pay                        |
+|                                                                          |
+|  --- Banking Analytics ---                                               |
+|  (UC20) Analyse portfolio mix and thin-file vs traditional comparison    |
+|  (UC21) Run macro-economic stress simulation / export                    |
+|                                                                          |
+|  --- Shared ---                                                          |
+|  (UC22) Select staff role view (prototype navigation, not real RBAC)     |
++==========================================================================+
+
+ACTOR -> USE CASE ASSOCIATIONS
+  [LO] ---- UC1, UC2, UC3, UC4, UC5, UC10, UC11, UC22
+  [CA] ---- UC1, UC3, UC6, UC7, UC8, UC10, UC11, UC12, UC22
+  [LM] ---- UC1, UC13, UC14, UC15, UC16, UC17, UC19, UC20, UC22
+  [RO] ---- UC1, UC6, UC17, UC18, UC19, UC20, UC21, UC22
+  [CS] ---- UC1, UC15, UC16(view only), UC22
+  [ML] ---- UC9 (provides score to UC6)
+
+RELATIONSHIPS
+  UC6  <<include>>  UC9    (risk view always uses the scoring service)
+  UC13 <<include>>  UC14   (disbursement generates schedule)
+  UC5  <<extend>>   UC4    (send to assessment when documents are verified)
+  UC18 <<extend>>   UC17   (warnings raised from DPD / DTI monitoring)
+
+COMPACT ASCII VIEW
+                                 +--------------------------+
+  Loan Officer ------------------| Applications / Intake    |
+                                 +--------------------------+
+  Credit Analyst ----------------| Credit Assessment <-- ML |
+                                 | Debt Analysis            |
+                                 +--------------------------+
+  Loan Manager ------------------| Loan Management          |
+                                 | Risk Monitoring          |
+  Risk Officer ------------------| Banking Analytics        |
+                                 +--------------------------+
+  Customer Service --------------| Loan terms / schedules   |
+                                 +--------------------------+
